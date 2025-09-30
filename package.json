@@ -21,6 +21,7 @@
   "homepage": "https://github.com/b4z4m/carHub#readme",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "connect-sqlite3": "^0.9.16",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
