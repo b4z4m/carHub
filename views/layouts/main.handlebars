@@ -1,0 +1,40 @@
+<!-- views/layouts/main.handlebars -->
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{#if title}}{{title}} | {{/if}}CarHub</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="brand" href="/">CarHub</a>
+      <div class="links">
+        <a href="/">Hem</a>
+        <a href="/cars">Bilar</a>
+        <a href="/contact">Kontakt</a>
+        {{#if isAuth}}
+          <span class="user">Hej, {{user.username}}</span>
+          <form class="logout" action="/logout" method="post">
+            <button type="submit">Logga ut</button>
+          </form>
+        {{else}}
+          <a href="/login">Logga in</a>
+        {{/if}}
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    {{{body}}}
+  </main>
+
+  <footer class="site-footer">
+    <small>© {{year}} CarHub</small>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<!-- views/profile.handlebars -->
+<section class="page">
+  <h2>Profil</h2>
+  {{#if user}}
+    <p>Användare: {{user.username}}</p>
+  {{else}}
+    <p>Du behöver vara inloggad för att se profil.</p>
+  {{/if}}
+</section>

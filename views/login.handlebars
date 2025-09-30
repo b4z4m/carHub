@@ -1,0 +1,15 @@
+<!-- views/login.handlebars -->
+<section class="page">
+  <h2>Logga in</h2>
+  {{#if error}}<p class="error">{{error}}</p>{{/if}}
+  <form class="form" method="post" action="/login">
+    <label>Användarnamn
+      <input type="text" name="username" placeholder="t.ex. admin" required />
+    </label>
+    <label>Lösenord
+      <input type="password" name="password" placeholder="t.ex. admin123" required />
+    </label>
+    <button type="submit">Logga in</button>
+  </form>
+  <p class="hint">Demo: <code>admin / admin123</code> (byter vi senare).</p>
+</section>

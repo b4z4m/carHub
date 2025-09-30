@@ -1,0 +1,18 @@
+<!-- views/cars.handlebars -->
+<section class="page">
+  <h2>Bilar</h2>
+
+  {{#if cars.length}}
+    <ul class="card-grid">
+      {{#each cars}}
+        <li class="card">
+          <h3>{{this.title}}</h3>
+          <p>{{this.year}} • {{this.body_type}} • {{this.fuel}}</p>
+          <a class="btn" href="/cars/{{this.id}}">Visa</a>
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p>Inga bilar än. <em>Vi lägger till uppladdning & seed senare.</em></p>
+  {{/if}}
+</section>
