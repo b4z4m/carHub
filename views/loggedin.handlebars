@@ -1,6 +1,11 @@
-<!-- views/loggedin.handlebars -->
+{{!-- Page: simple confirmation screen after successful login (not used) --}}
 <section class="page">
-  <h2>Du är inloggad</h2>
-  <p>Välkommen, {{user.username}}!</p>
-  <p><a class="btn" href="/cars">Se bilar</a></p>
+  {{!-- Heading: tells the user they are authenticated --}}
+  <h2>You are logged in</h2>
+
+  {{!-- Greeting: uses session user injected into the view --}}
+  <p>Welcome, {{user.username}}!</p>
+
+  {{!-- CTA: go browse the full car list --}}
+  <p><a class="btn" href="/cars">See all cars</a></p>
 </section>

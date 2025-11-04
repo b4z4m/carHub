@@ -1,18 +1,283 @@
-<!-- views/cars.handlebars -->
 <section class="page">
-  <h2>Bilar</h2>
+  {{!-- Top bar: page title (left) + "Add car" button for logged-in users (right) --}}
+  <div style="display:flex; justify-content:space-between; align-items:center">
+     <div style=" padding:12px; border-radius:8px;">
+       <h2>Cars</h2>
+     </div>
+     <div style="padding:12px; border-radius:8px;">
+       {{#if isAuth}}
+         <p><a class="btn" href="/cars/new">➕ Add car</a></p>
+       {{/if}}
+     </div>
+  </div>
 
+  {{!-- Search + filters form (text + brand/model/type/fuel/gear/year/price/sort) --}}
+  <form
+    id="car-filters"
+    role="search"
+    aria-label="Car search and filters"
+    method="get"
+    action="/cars"
+    class="form"
+    style="margin-bottom:1rem; max-width:none;"
+  >
+    <label>Search (title / brand / model)
+      <span class="search-row">
+        <input
+          type="text"
+          name="q"
+          value="{{query.q}}"
+          placeholder="e.g. Audi RS3 or BMW"
+          autocomplete="off"
+          aria-label="Search text"
+        >
+        <button type="submit" class="btn">Search</button>
+      </span>
+    </label>
+
+    <div class="filters-row" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:.6rem;">
+
+      {{!-- Brand select --}}
+      <label>Brand
+        <select name="brand" aria-label="Brand">
+          <option value="">All</option>
+          {{#each filters.brands}}
+            <option value="{{this}}" {{#if (eq ../query.brand this)}}selected{{/if}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </label>
+
+      {{!-- Model select (enabled only when brand chosen) --}}
+      <label>Model
+        <select name="model" aria-label="Model" {{#unless query.brand}}disabled{{/unless}}>
+          <option value="">All</option>
+          {{#each filters.models}}
+            <option value="{{this}}" {{#if (eq ../query.model this)}}selected{{/if}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </label>
+
+      <label>Body type
+        <select name="body_type" aria-label="Body type">
+          <option value="">All</option>
+          <option value="Sedan"     {{#if (eq query.body_type "Sedan")}}selected{{/if}}>Sedan</option>
+          <option value="SUV"       {{#if (eq query.body_type "SUV")}}selected{{/if}}>SUV</option>
+          <option value="Wagon"     {{#if (eq query.body_type "Wagon")}}selected{{/if}}>Wagon</option>
+          <option value="Hatchback" {{#if (eq query.body_type "Hatchback")}}selected{{/if}}>Hatchback</option>
+          <option value="Coupe"     {{#if (eq query.body_type "Coupe")}}selected{{/if}}>Coupe</option>
+        </select>
+      </label>
+
+      <label>Fuel
+        <select name="fuel" aria-label="Fuel">
+          <option value="">All</option>
+          <option value="Petrol"   {{#if (eq query.fuel "Petrol")}}selected{{/if}}>Petrol</option>
+          <option value="Diesel"   {{#if (eq query.fuel "Diesel")}}selected{{/if}}>Diesel</option>
+          <option value="Hybrid"   {{#if (eq query.fuel "Hybrid")}}selected{{/if}}>Hybrid</option>
+          <option value="Electric" {{#if (eq query.fuel "Electric")}}selected{{/if}}>Electric</option>
+        </select>
+      </label>
+
+      <label>Transmission
+        <select name="transmission" aria-label="Transmission">
+          <option value="">All</option>
+          <option value="Manual"    {{#if (eq query.transmission "Manual")}}selected{{/if}}>Manual</option>
+          <option value="Automatic" {{#if (eq query.transmission "Automatic")}}selected{{/if}}>Automatic</option>
+        </select>
+      </label>
+
+      <label>Min year
+        <input type="number" name="minYear" value="{{query.minYear}}" min="1900" max="2100" inputmode="numeric" placeholder="2015">
+      </label>
+
+      <label>Max price (SEK)
+        <input type="number" name="maxPrice" value="{{query.maxPrice}}" min="0" inputmode="numeric" placeholder="300000">
+      </label>
+
+      <label>Sort
+        <select name="sort" aria-label="Sort">
+          <option value=""            {{#unless query.sort}}selected{{/unless}}>Newest</option>
+          <option value="price_asc"   {{#if (eq query.sort "price_asc")}}selected{{/if}}>Price ↑</option>
+          <option value="price_desc"  {{#if (eq query.sort "price_desc")}}selected{{/if}}>Price ↓</option>
+          <option value="year_desc"   {{#if (eq query.sort "year_desc")}}selected{{/if}}>Year ↓</option>
+          <option value="year_asc"    {{#if (eq query.sort "year_asc")}}selected{{/if}}>Year ↑</option>
+        </select>
+      </label>
+    </div>
+
+    {{!-- Active filter badges + clear button --}}
+    <div class="filter-actions" style="display:flex; gap:.6rem; flex-wrap:wrap; align-items:center;">
+      <a class="btn btn-secondary" href="/cars">Clear all</a>
+
+      <div class="active-filters" style="display:flex; gap:.4rem; flex-wrap:wrap;">
+        {{#if query.q}}           <span class="badge">{{query.q}}</span>{{/if}}
+        {{#if query.brand}}       <span class="badge">brand: {{query.brand}}</span>{{/if}}
+        {{#if query.model}}       <span class="badge">model: {{query.model}}</span>{{/if}}
+        {{#if query.body_type}}   <span class="badge">type: {{query.body_type}}</span>{{/if}}
+        {{#if query.fuel}}        <span class="badge">fuel: {{query.fuel}}</span>{{/if}}
+        {{#if query.transmission}}<span class="badge">gear: {{query.transmission}}</span>{{/if}}
+        {{#if query.minYear}}     <span class="badge">min year: {{query.minYear}}</span>{{/if}}
+        {{#if query.maxPrice}}    <span class="badge">max price: {{query.maxPrice}}</span>{{/if}}
+        {{#if query.sort}}        <span class="badge">sort: {{query.sort}}</span>{{/if}}
+      </div>
+    </div>
+  </form>
+
+  {{!-- Results list (cards via cars-card partial) + pagination bar --}}
   {{#if cars.length}}
-    <ul class="card-grid">
+    <ul class="card-grid" style="list-style:none; padding-left:0; margin:0;">
       {{#each cars}}
-        <li class="card">
-          <h3>{{this.title}}</h3>
-          <p>{{this.year}} • {{this.body_type}} • {{this.fuel}}</p>
-          <a class="btn" href="/cars/{{this.id}}">Visa</a>
-        </li>
+        {{> cars-card}}
       {{/each}}
     </ul>
+
+    {{#if pagination}}
+      <nav id="pager"
+           aria-label="Pagination"
+           data-page="{{pagination.page}}"
+           data-total="{{pagination.totalPages}}"
+           data-pagesize="{{pagination.pageSize}}"
+           style="margin-top:1rem;display:flex;justify-content:center;">
+        <noscript>
+          <p style="text-align:center;">
+            Page {{pagination.page}} of {{pagination.totalPages}}.
+          </p>
+        </noscript>
+      </nav>
+    {{/if}}
+  {{!-- Empty state (no cars match current filters) --}}
   {{else}}
-    <p>Inga bilar än. <em>Vi lägger till uppladdning & seed senare.</em></p>
+    <div class="card" style="text-align:center;">
+      <h3 style="margin-top:0;">No cars found</h3>
+      {{#if hasFilters}}
+        <p>Try adjusting your filters or <a href="/cars" class="meta-link">clear all</a>.</p>
+      {{else}}
+        <p>Nothing here yet. Check back soon.</p>
+      {{/if}}
+    </div>
   {{/if}}
 </section>
+
+<script>
+  /* Filters & pagination behavior (brand→model linking, instant apply, pager render) */
+  (function () {
+    const form = document.getElementById('car-filters');
+    if (!form) return;
+
+    const brandSel = form.querySelector('select[name="brand"]');
+    const modelSel = form.querySelector('select[name="model"]');
+
+    function assignUrl(mutator) {
+      const url = new URL(window.location.href);
+      mutator(url);
+      url.searchParams.delete('page');
+      window.location.assign(url.toString());
+    }
+
+    if (brandSel) {
+      brandSel.addEventListener('change', () => {
+        const brand = brandSel.value;
+        if (modelSel) {
+          if (!brand) {
+            modelSel.setAttribute('disabled', 'disabled');
+            modelSel.value = '';
+          } else {
+            modelSel.removeAttribute('disabled');
+          }
+        }
+        assignUrl(url => {
+          if (!brand) url.searchParams.delete('brand');
+          else url.searchParams.set('brand', brand);
+          url.searchParams.delete('model');
+        });
+      });
+    }
+
+    form.querySelectorAll('select, input[type="number"]').forEach(el => {
+      if (el.name === 'brand') return;
+      el.addEventListener('change', () => {
+        assignUrl(url => {
+          if (!el.value) url.searchParams.delete(el.name);
+          else url.searchParams.set(el.name, el.value);
+        });
+      });
+    });
+
+    const pager = document.getElementById('pager');
+    if (pager) {
+      const page = Number(pager.dataset.page || 1);
+      const total = Number(pager.dataset.total || 1);
+
+      function pageHref(targetPage) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', String(targetPage));
+        return url.toString();
+      }
+
+      const frag = document.createDocumentFragment();
+      function btn(label, target, disabled, isActive) {
+        const a = document.createElement('a');
+        a.className =
+          'btn' +
+          (isActive ? ' btn-active' : '') +
+          (disabled ? ' btn-disabled' : '');
+        a.textContent = label;
+        a.style.margin = '0 .2rem';
+        if (disabled) {
+          a.setAttribute('aria-disabled', 'true');
+          a.setAttribute('tabindex', '-1');
+          a.href = 'javascript:void(0)';
+        } else {
+          a.href = pageHref(target);
+        }
+        frag.appendChild(a);
+      }
+
+      const start = Math.max(1, page - 2);
+      const end = Math.min(total, page + 2);
+
+      btn('« First', 1, page === 1, false);
+      btn('‹ Prev', Math.max(1, page - 1), page === 1, false);
+
+      if (start > 1) {
+        const span = document.createElement('span');
+        span.textContent = '…';
+        span.className = 'meta';
+        span.style.margin = '0 .3rem';
+        frag.appendChild(span);
+      }
+
+      for (let p = start; p <= end; p++) btn(String(p), p, false, p === page);
+
+      if (end < total) {
+        const span = document.createElement('span');
+        span.textContent = '…';
+        span.className = 'meta';
+        span.style.margin = '0 .3rem';
+        frag.appendChild(span);
+      }
+
+      btn('Next ›', Math.min(total, page + 1), page === total, false);
+      btn('Last »', total, page === total, false);
+
+      pager.appendChild(frag);
+    }
+  })();
+</script>
+
+<style>
+  /* Small local styles for filter badges and buttons */
+  .filter-actions .btn.btn-secondary { background:#1f2a44; color:#dbeafe; }
+  .badge{
+    display:inline-block; padding:.2rem .5rem; border-radius:.5rem;
+    font-size:.85rem; line-height:1; background:#0b1324; border:1px solid #1f2940; color:#c8d2e1;
+  }
+  .meta{ color:#9fb0c5; margin:.35rem 0; }
+  .meta-link{ color:#cde3ff; text-decoration:underline; }
+  .meta-link-disabled{ color:#6b7280; cursor:default; text-decoration:none; }
+  .btn-active{ background:#f59e0b !important; color:#1f1300 !important; }
+  .btn-disabled{ opacity:.5; pointer-events:none; }
+  @media (max-width: 480px){
+    .filters-row{ grid-template-columns:1fr 1fr; }
+  }
+</style>

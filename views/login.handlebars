@@ -1,15 +1,85 @@
-<!-- views/login.handlebars -->
+{{!-- Login page: lets user enter credentials and handle login/logout states --}}
 <section class="page">
-  <h2>Logga in</h2>
-  {{#if error}}<p class="error">{{error}}</p>{{/if}}
-  <form class="form" method="post" action="/login">
-    <label>Användarnamn
-      <input type="text" name="username" placeholder="t.ex. admin" required />
-    </label>
-    <label>Lösenord
-      <input type="password" name="password" placeholder="t.ex. admin123" required />
-    </label>
-    <button type="submit">Logga in</button>
-  </form>
-  <p class="hint">Demo: <code>admin / admin123</code> (byter vi senare).</p>
+  {{!-- Heading for the page --}}
+  <h2>Log in</h2>
+
+  {{!-- Show server validation message if wrong username/password --}}
+  {{#if error}}
+    <p class="error" role="alert">{{error}}</p>
+  {{/if}}
+
+  {{!-- Only show form when user is NOT already logged in --}}
+  {{#unless isAuth}}
+    <form class="form" action="/login" method="post" novalidate style="max-width:420px;">
+      {{!-- Username input field --}}
+      <label>Username
+        <input
+          type="text"
+          name="username"
+          inputmode="text"
+          autocomplete="username"
+          placeholder="e.g., johndoe"
+          value="{{form.username}}"
+          required
+          aria-required="true"
+        >
+      </label>
+
+      {{!-- Password input field with “show” toggle --}}
+      <label>Password
+        <div style="display:flex; gap:.5rem; align-items:center;">
+          <input
+            id="password"
+            type="password"
+            name="password"
+            autocomplete="current-password"
+            placeholder="Your password"
+            required
+            aria-required="true"
+            style="flex:1;"
+          >
+          <button type="button" class="btn btn-secondary" id="togglePass" aria-controls="password" aria-pressed="false">
+            Show
+          </button>
+        </div>
+      </label>
+
+      {{!-- Submit button --}}
+      <button type="submit" class="btn">Log in</button>
+    </form>
+
+    {{!-- Link to registration page for new users --}}
+    <p class="meta" style="margin-top:.75rem;">
+      No account yet?
+      <a class="meta-link" href="/register">Create one</a>.
+    </p>
+  {{/unless}}
+
+  {{!-- Display this if the user is already logged in --}}
+  {{#if isAuth}}
+    <div class="card" style="max-width:520px;">
+      <p>You are already logged in as <strong>{{user.username}}</strong>.</p>
+      <p>
+        <a class="btn" href="/cars">Go to cars</a>
+      </p>
+      <form action="/logout" method="post">
+        <button type="submit" class="btn btn-secondary">Log out</button>
+      </form>
+    </div>
+  {{/if}}
 </section>
+
+<script>
+  // Simple “show/hide password” button logic
+  (function () {
+    const input = document.getElementById('password');
+    const btn = document.getElementById('togglePass');
+    if (!input || !btn) return;
+    btn.addEventListener('click', () => {
+      const isPw = input.type === 'password';
+      input.type = isPw ? 'text' : 'password';
+      btn.textContent = isPw ? 'Hide' : 'Show';
+      btn.setAttribute('aria-pressed', String(isPw));
+    });
+  })();
+</script>

@@ -1,6 +1,172 @@
-<!-- views/home.handlebars -->
-<section class="hero">
-  <h1>Välkommen till CarHub</h1>
-  <p>Utforska, jämför och ladda upp bilar.</p>
-  <p><a class="btn" href="/cars">Gå till alla bilar</a></p>
+{{!-- Home page: hero with left intro + right shortcuts/stats, then latest cars list --}}
+
+<section class="hero home-hero">
+  {{!-- Grid wrapper for left (intro) and right (filters+stats) --}}
+  <div class="home-hero-grid">
+    {{!-- LEFT: headline + short text + primary CTA(s) --}}
+    <div class="hero-left">
+      <div class="hero-inner">
+        <h1>Welcome to CarHub😁</h1>
+        <p id="hero-short-text">Explore, compare, and upload cars.</p>
+        <p><a id="hero-btn" class="btn" href="/cars">Browse all cars🚘</a></p>
+        {{!-- Conditional CTA: add car if logged in, otherwise send to login --}}
+        <p>
+  {{#if isAuth}}
+    <a id="hero-btn2" class="btn" href="/cars/new">➕ Add a car</a>
+  {{else}}
+    <a id="hero-btn2" class="btn" href="/login">Log in or create an account to add a car</a>
+  {{/if}}
+</p>
+      </div>
+    </div>
+
+    {{!-- RIGHT: quick browse chips + small stats tiles --}}
+    <div class="hero-right">
+      <div class="section-header" style="margin:0;">
+        <h2>Browse by type</h2>
+      </div>
+
+      {{!-- Shortcut buttons that link to pre-filtered car lists --}}
+      <div class="chips chips-as-buttons">
+        <a class="chip-btn" href="/cars?body_type=Sedan">Sedan</a>
+        <a class="chip-btn" href="/cars?body_type=SUV">SUV</a>
+        <a class="chip-btn" href="/cars?fuel=Electric">Electric</a>
+        <a class="chip-btn" href="/cars?sort=price_asc&maxPrice=150000">Cheap deals</a>
+      </div>
+
+      {{!-- Mini KPIs pulled from stats (server-side) --}}
+      <div class="stats stats-compact">
+        <div class="stat">
+          <div class="stat-num">{{stats.cars}}</div>
+          <div class="stat-label">Cars listed</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">{{stats.users}}</div>
+          <div class="stat-label">Active users</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{!-- Local, section-scoped styles for hero only --}}
+  <style>
+    .home-hero{
+      padding: 1.5rem 1rem;
+      border-radius: 14px;
+    }
+    .home-hero .home-hero-grid{
+      display: grid;
+      gap: 1.25rem;
+      align-items: start;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 900px){
+      .home-hero .home-hero-grid{
+        grid-template-columns: 1.1fr 1fr; /* lite mer plats åt texten */
+        gap: 1.5rem 1.75rem;
+      }
+    }
+
+    /* Högerkolumn: knappar som matchar sajtens stil */
+    .home-hero .chips-as-buttons{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: .6rem;
+      margin-top: .25rem;
+      margin-bottom: .9rem;
+    }
+    .home-hero .chip-btn{
+      display: inline-block;
+      text-align: center;
+      padding: .6rem .9rem;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform .04s ease, filter .15s ease, background .15s ease;
+    }
+    .home-hero .chip-btn:hover{
+      filter: brightness(1.07);
+      background: #0e1528;
+    }
+    .home-hero .chip-btn:active{ transform: translateY(1px) }
+
+    /* Stats i små rutor under knapparna */
+    .home-hero .stats-compact{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: .6rem;
+    }
+    .home-hero .stat{
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: .9rem;
+      text-align: center;
+    }
+    .home-hero .stat-num{
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--brand);
+      line-height: 1.1;
+    }
+    .home-hero .stat-label{
+      color: var(--muted);
+      font-size: .9rem;
+      margin-top: .2rem;
+    }
+
+    /* Finjustera vänsterkolumn spacing lite */
+    .home-hero .hero-inner p{ 
+        margin: .25rem 0 .5rem; 
+        }
+.hero-left .hero-inner {
+ display: flex;
+  flex-direction: column;
+  align-items: center;           /* horisontellt */
+  text-align: center;  
+}
+    .home-hero .hero-inner #hero-btn{
+        padding: 12px;
+        margin-top: 5px;
+        font-size: 1.1rem;
+        
+    }
+    .home-hero .hero-inner #hero-btn2{
+        padding: 17px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        margin-top: 5px;
+        }
+     #hero-short-text{
+        font-size: 1.1rem;
+    }
+
+    
+    .hero-right{
+        text-align: center;
+    }
+
+
+  </style>
+</section>
+
+{{!-- Recently added list: shows latest cars using the card partial --}}
+<section class="section">
+  <div class="section-header">
+    <h2>Recently added cars</h2>
+    <a class="link" href="/cars?sort=newest">See all</a>
+  </div>
+
+  {{#if latest.length}}
+    <ul class="card-grid" aria-label="Recently added cars">
+      {{#each latest}}
+        {{> cars-card}}
+      {{/each}}
+    </ul>
+  {{else}}
+    <p>No cars yet. <a href="/cars/new">Add the first one</a> 🚀</p>
+  {{/if}}
 </section>

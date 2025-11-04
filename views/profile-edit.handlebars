@@ -1,0 +1,85 @@
+<section class="page">
+  <h2>Edit profile</h2>
+
+  {{!-- Error message from server (if any) --}}
+  {{#if error}}
+    <p class="error">{{error}}</p>
+  {{/if}}
+
+  {{!-- Header card: current avatar (or initial) + username preview --}}
+  <div class="card" style="margin-bottom:1rem;">
+    <header style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+      {{#if me.avatar_path}}
+        <img
+          src="/{{me.avatar_path}}"
+          alt="{{me.username}}'s current avatar"
+          style="width:96px;height:96px;object-fit:cover;border-radius:50%;border:2px solid #1f2940;background:#0b1324;"
+        >
+      {{else}}
+        <div
+          aria-hidden="true"
+          style="width:96px;height:96px;border-radius:50%;background:#0b1324;border:2px solid #1f2940;display:flex;align-items:center;justify-content:center;color:#9fb0c5;font-weight:700;">
+          {{#if me.username}}{{me.username.[0]}}{{else}}U{{/if}}
+        </div>
+      {{/if}}
+
+      <div>
+        <h3 style="margin:0;">{{me.username}}</h3>
+        <p class="meta" style="margin:.25rem 0 0;">Public profile preview above.</p>
+      </div>
+    </header>
+
+    {{!-- Optional: checkbox to remove current avatar (outside the form by design) --}}
+    {{#if me.avatar_path}}
+      <label style="display:flex; gap:.5rem; margin-top: 15px; align-items:center;">
+        <input type="checkbox" name="remove_avatar">
+        <span>Remove current avatar</span>
+      </label>
+    {{/if}}
+  </div>
+
+  {{!-- Main form: upload new avatar + edit bio --}}
+  <div class="card" style="margin-bottom:1rem;">
+    <form class="form" action="/profile" method="post" enctype="multipart/form-data" novalidate>
+      {{!-- Avatar file input (optional) --}}
+      <label>Avatar (optional)
+        <input type="file" name="avatar" accept="image/*" aria-label="Avatar image">
+        <small class="meta">Allowed: JPG, PNG, WEBP, GIF. Max 4&nbsp;MB.</small>
+      </label>
+
+      {{!-- Bio textarea (optional) --}}
+      <label>Bio (optional)
+        <textarea name="bio" rows="4" placeholder="Tell people something about you…">{{me.bio}}</textarea>
+        <small class="meta">Keep it short and clean (plain text only).</small>
+      </label>
+    </div>
+
+    {{!-- Actions: save or go back to public profile --}}
+    <div class="actions" style="display:flex; gap:.6rem; flex-wrap:wrap;">
+      <button type="submit" class="btn">Save changes</button>
+      <a class="btn btn-secondary" href="/users/{{me.id}}">← Back to your public profile</a>
+    </div>
+  </form>
+</section>
+
+{{!-- Tiny enhancement: preview chosen avatar before upload --}}
+<script>
+  (function () {
+    const file = document.querySelector('input[name="avatar"]');
+    if (!file) return;
+    file.addEventListener('change', () => {
+      const img = document.querySelector('img[alt$="current avatar"]');
+      if (!img) return;
+      const f = file.files && file.files[0];
+      if (!f) return;
+      const url = URL.createObjectURL(f);
+      img.src = url;
+    });
+  })();
+</script>
+
+{{!-- Local style helpers for this page --}}
+<style>
+  .meta{ color:#9fb0c5; }
+  .btn.btn-secondary { background:#1f2a44; color:#dbeafe; }
+</style>

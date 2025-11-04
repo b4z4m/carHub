@@ -1,0 +1,93 @@
+{{!-- Public user profile: avatar (or placeholder), username, bio/deleted note, owner edit CTA, and this user's cars. --}}
+<section class="page">
+  {{!-- Header: avatar (or first-letter placeholder) + username + bio/deleted state + "Edit profile" if owner --}}
+  <header class="profile-header" style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+    {{#if profile.avatar_path}}
+      <img
+        src="/{{profile.avatar_path}}"
+        alt="{{profile.username}}'s avatar"
+        style="width:96px;height:96px;object-fit:cover;border-radius:50%;border:2px solid #1f2940;background:#0b1324;"
+      >
+    {{else}}
+      <div
+        aria-hidden="true"
+        style="width:96px;height:96px;border-radius:50%;background:#0b1324;border:2px solid #1f2940;display:flex;align-items:center;justify-content:center;color:#9fb0c5;font-weight:700;">
+        {{#if profile.username}}{{profile.username.[0]}}{{else}}U{{/if}}
+      </div>
+    {{/if}}
+
+    <div style="flex:1;">
+      <h2 style="margin:0;">{{profile.username}}</h2>
+
+      {{#if profile.isDeleted}}
+        <p class="meta" style="margin:.25rem 0 0;"><em>This user was deleted.</em></p>
+      {{else}}
+        {{#if profile.bio}}
+          <p class="meta" style="margin:.25rem 0 0;">{{profile.bio}}</p>
+        {{else}}
+          <p class="meta" style="margin:.25rem 0 0;">No bio provided.</p>
+        {{/if}}
+      {{/if}}
+    </div>
+
+    {{#if canEdit}}
+      <div>
+        <a class="btn" href="/profile/edit">✏️ Edit profile</a>
+      </div>
+    {{/if}}
+  </header>
+
+  <hr style="border-color:#1f2940; opacity:.4; margin:1rem 0;">
+
+  {{!-- Cars list header --}}
+  <h3 style="margin-top:0;">Cars by {{profile.username}}</h3>
+
+  {{!-- Car cards grid for this user (or empty state) --}}
+  {{#if cars.length}}
+    <ul class="card-grid" style="list-style:none; padding-left:0; margin:0;">
+      {{#each cars}}
+        <li class="card">
+          {{#if this.first_image_path}}
+            <img
+              src="/{{this.first_image_path}}"
+              alt="{{this.title}}"
+              style="height:150px;object-fit:cover;border-radius:10px;width:100%;border:1px solid #1f2940;background:#0b1324;"
+            >
+          {{/if}}
+
+          <h4 style="margin-top:.6rem;">{{this.title}}</h4>
+
+          <p class="meta">
+            {{#if this.year}}{{this.year}}{{/if}}
+            {{#if this.body_type}} • {{this.body_type}}{{/if}}
+            {{#if this.fuel}} • {{this.fuel}}{{/if}}
+            {{#if this.transmission}} • {{this.transmission}}{{/if}}
+          </p>
+
+          {{#if this.price}}<p><strong>{{this.price}} SEK</strong></p>{{/if}}
+
+          <a class="btn" href="/cars/{{this.id}}">View</a>
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <div class="card" style="text-align:center;">
+      <p>This user has not posted any cars yet.</p>
+    </div>
+  {{/if}}
+
+  {{!-- Back link --}}
+  <p style="margin-top:1rem;">
+    <a href="/cars">← Back to Cars</a>
+  </p>
+</section>
+
+{{!-- Local styles for this view only --}}
+<style>
+  .meta{ color:#9fb0c5; margin:.35rem 0; }
+  .card-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap:.8rem;
+  }
+</style>

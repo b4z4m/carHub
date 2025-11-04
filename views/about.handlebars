@@ -1,0 +1,45 @@
+{{!-- About page: static info about the project + tech + features --}}
+
+<section class="page">
+  {{!-- Page heading: uses the controller-provided title --}}
+  <h2>{{title}}</h2>
+
+  {{!-- Content wrapper: stack of info cards --}}
+  <div class="card" style="display:grid; gap:.75rem;">
+    {{!-- Intro: brief description of CarHub and stack --}}
+    <p>
+      <strong>CarHub</strong> is a school project built during the Web Development Fundamentals HT2025 (TGWK12) course.  
+      Here you can publish, search, and browse cars uploaded by users.  
+      The site is built using Node.js, Express, Handlebars, and SQLite.
+    </p>
+
+    {{!-- Features card: bullet list of what the site includes --}}
+    <div class="card" style="border:1px dashed #1f2940; border-radius:12px; padding:.8rem;">
+      <h3 style="margin:.2rem 0 .4rem;">What the site includes</h3>
+      <ul style="margin:.2rem 0 .2rem 1.1rem;">
+        <li>Car listings with filters and search functionality</li>
+        <li>Detailed car pages with images</li>
+        <li>User login and personal car postings</li>
+        <li>Admin panel with access to users, cars, and database tables</li>
+      </ul>
+    </div>
+
+    {{!-- Tech card: quick technology stack line --}}
+    <div class="card" style="border:1px solid #1f2940; border-radius:12px; padding:.8rem;">
+      <h3 style="margin:.2rem 0 .4rem;">Technology</h3>
+      <p class="meta" style="margin:0;">Node.js • Express • Handlebars • SQLite • Vanilla JS • CSS</p>
+    </div>
+
+    {{!-- Closing card: friendly sign-off --}}
+    <div class="card" style="border:1px solid #1f2940; border-radius:12px; padding:.8rem;">
+      <h3 style="margin:.2rem 0 .4rem;">I hope you enjoy!</h3>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* Page-scoped tweaks: spacing for text and list items */
+  p { line-height: 1.6; }
+  ul li { margin-bottom: .25rem; }
+</style>

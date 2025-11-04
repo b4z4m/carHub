@@ -1,40 +1,85 @@
-<!-- views/layouts/main.handlebars -->
-<!DOCTYPE html>
-<html lang="sv">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Document meta + dynamic title (adds page title if provided) -->
+  <meta charset="utf-8">
   <title>{{#if title}}{{title}} | {{/if}}CarHub</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Global stylesheet -->
+  <link href="/css/styles.css" rel="stylesheet">
+
+  <!-- Minimal fallback styles (only used if styles.css is missing) -->
+  <style>
+    body{margin:0;background:#0a1222;color:#e5ecfb;font-family:system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, sans-serif;}
+    a{color:#9cc5ff}
+    header, footer{background:#0f1b34}
+    .container{max-width:980px;margin:0 auto;padding:0 16px;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 0;gap:12px;}
+    nav a{margin-right:12px;text-decoration:none;color:#cfe3ff}
+    nav a.active{font-weight:600;text-decoration:underline}
+    .auth{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .btn{display:inline-block;background:#1f2a44;color:#dbeafe;border:1px solid #2b3a60;border-radius:8px;padding:6px 10px;text-decoration:none}
+    .btn-danger{background:#ef4444;color:#fff;border-color:#ef4444}
+    main{padding:18px 0;}
+    .page h2{margin-top:0}
+    .meta-link{color:#cfe3ff;text-decoration:underline}
+    .flash{padding:8px 10px;border-radius:8px;background:#10203d;border:1px solid #1f2940;margin:10px 0}
+  </style>
 </head>
 <body>
+
+  <!-- Site header: sticky topbar with brand + main navigation -->
   <header class="site-header">
-    <nav class="nav">
-      <a class="brand" href="/">CarHub</a>
-      <div class="links">
-        <a href="/">Hem</a>
-        <a href="/cars">Bilar</a>
-        <a href="/contact">Kontakt</a>
-        {{#if isAuth}}
-          <span class="user">Hej, {{user.username}}</span>
-          <form class="logout" action="/logout" method="post">
-            <button type="submit">Logga ut</button>
-          </form>
-        {{else}}
-          <a href="/login">Logga in</a>
-        {{/if}}
+    <div class="container">
+      <div class="topbar">
+        <!-- Left: brand button + primary nav links (Cars/About/Contact/optional Profile) -->
+        <div style="display:flex;align-items:center;gap:14px;">
+          <a href="/" class="btn" aria-label="CarHub home">CarHub</a>
+          <nav aria-label="Main">
+            <a href="/cars"    class="{{#if (eq title 'Cars')}}active{{/if}}">Cars</a>
+            <a href="/about"    class="{{#if (eq title 'About')}}active{{/if}}">About</a>
+            <a href="/contact" class="{{#if (eq title 'Contact')}}active{{/if}}">Contact</a>
+            {{#if isAuth}}
+              <a href="/profile" class="{{#if (eq title 'Your profile')}}active{{/if}}">Profile</a>
+            {{/if}}
+          </nav>
+        </div>
+
+        <!-- Right: auth status (login button or username + logout) + optional Admin link -->
+        <div class="auth">
+          {{#if isAuth}}
+            <span>Logged in as <a href="/profile" class="meta-link">{{user.username}}</a></span>
+            <form action="/logout" method="post" style="margin:0;">
+              <button type="submit" class="btn btn-danger">Log out</button>
+            </form>
+          {{else}}
+            <a class="btn" href="/login">Log in</a>
+          {{/if}}
+
+          <!-- Admin entry: visible only for users with isAdmin flag -->
+          {{#if user.isAdmin}}
+            <a href="/admin" class="nav-link">Admin view</a>
+          {{/if}}
+        </div>
       </div>
-    </nav>
+    </div>
   </header>
 
-  <main class="container">
-    {{{body}}}
+  <!-- Main content area: renders the current view into {{{body}}} -->
+  <main>
+    <div class="container">
+      {{{body}}}
+    </div>
   </main>
 
-  <footer class="site-footer">
-    <small>© {{year}} CarHub</small>
+  <!-- Footer: simple credits + year -->
+  <footer>
+    <div class="container" style="padding:14px 0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <span>&copy; {{year}} CarHub</span>
+      <span>Built for school project by Badr Azam</span>
+    </div>
   </footer>
 
-  <script src="/js/app.js"></script>
 </body>
 </html>

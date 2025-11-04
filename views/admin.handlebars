@@ -1,0 +1,236 @@
+<section class="page">
+  <h2>{{title}}</h2>
+
+  {{!-- Flash message (optional) --}}
+  {{#if message}}
+    <p class="meta">{{message}}</p>
+  {{/if}}
+
+  {{!-- Top tabs for admin sections --}}
+  <nav class="admin-tabs">
+    <a class="btn {{#if (eq mode 'dashboard')}}btn-active{{/if}}" href="/admin">Dashboard</a>
+    <a class="btn {{#if (eq mode 'users')}}btn-active{{/if}}" href="/admin/users">Users</a>
+    <a class="btn {{#if (eq mode 'cars')}}btn-active{{/if}}" href="/admin/cars">Cars</a>
+    <a class="btn {{#if (eq mode 'tables')}}btn-active{{/if}}" href="/admin/tables">Tables</a>
+  </nav>
+
+  {{!-- Dashboard: KPI tiles + latest IDs --}}
+  {{#if (eq mode "dashboard")}}
+    <div class="tile-grid">
+      <div class="tile">
+        <div class="tile-kpi">{{metrics.totalUsers}}</div>
+        <div class="tile-label">Users</div>
+      </div>
+      <div class="tile">
+        <div class="tile-kpi">{{metrics.totalAdmins}}</div>
+        <div class="tile-label">Admins</div>
+      </div>
+      <div class="tile">
+        <div class="tile-kpi">{{metrics.totalDeletedUsers}}</div>
+        <div class="tile-label">Deleted users</div>
+      </div>
+      <div class="tile">
+        <div class="tile-kpi">{{metrics.totalCars}}</div>
+        <div class="tile-label">Cars</div>
+      </div>
+      <div class="tile">
+        <div class="tile-kpi">{{metrics.totalImages}}</div>
+        <div class="tile-label">Images</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <h3 style="margin-top:0;">Latest IDs</h3>
+      <p class="meta">User: {{#if metrics.latestIds.user}}{{metrics.latestIds.user}}{{else}}—{{/if}} •
+        Car: {{#if metrics.latestIds.car}}{{metrics.latestIds.car}}{{else}}—{{/if}} •
+        Image: {{#if metrics.latestIds.image}}{{metrics.latestIds.image}}{{else}}—{{/if}}
+      </p>
+    </div>
+  {{/if}}
+
+  {{!-- Users list: pager + table + actions --}}
+  {{#if (eq mode "users")}}
+    {{#if pagination}}
+      <div class="pager-bar">
+        <div class="pager-left">
+          <a class="btn btn-secondary {{#if (eq pagination.page 1)}}btn-disabled{{/if}}" href="/admin/users?page=1">First</a>
+          <a class="btn btn-secondary {{#if (eq pagination.page 1)}}btn-disabled{{/if}}" href="/admin/users?page={{subtract pagination.page 1}}">Prev</a>
+          <form class="pager-form" method="get" action="/admin/users">
+            <input type="number" min="1" max="{{pagination.totalPages}}" name="page" value="{{pagination.page}}" aria-label="Page number">
+            <span class="meta">of {{pagination.totalPages}}</span>
+          </form>
+          <a class="btn btn-secondary {{#if (eq pagination.page pagination.totalPages)}}btn-disabled{{/if}}" href="/admin/users?page={{add pagination.page 1}}">Next</a>
+          <a class="btn btn-secondary {{#if (eq pagination.page pagination.totalPages)}}btn-disabled{{/if}}" href="/admin/users?page={{pagination.totalPages}}">Last</a>
+        </div>
+        <div class="pager-right meta">
+          {{#if pagination.range}}Showing ID {{pagination.range.from}} – {{pagination.range.to}}{{/if}}
+        </div>
+      </div>
+    {{/if}}
+
+    {{#if users.length}}
+      <div class="card" style="overflow:auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Role</th>
+              <th style="width:360px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each users}}
+              <tr>
+                <td>{{this.id}}</td>
+                <td>
+                  {{#if this.is_deleted}}
+                    <span class="badge">Deleted user</span>
+                  {{else}}
+                    <a href="/users/{{this.id}}" class="meta-link">{{this.username}}</a>
+                  {{/if}}
+                </td>
+                <td>
+                  {{#if this.is_deleted}}
+                    <span class="meta">—</span>
+                  {{else}}
+                    {{#if this.is_admin}}Admin{{else}}User{{/if}}
+                  {{/if}}
+                </td>
+                <td>
+                  {{#if this.is_deleted}}
+                    <span class="meta">Deleted</span>
+                  {{else}}
+                    <form method="post" action="/admin/users/{{this.id}}/toggle-admin" style="display:inline;">
+                      <button class="btn btn-secondary" type="submit">
+                        {{#if this.is_admin}}Demote{{else}}Promote to admin{{/if}}
+                      </button>
+                    </form>
+                    <form method="post" action="/admin/users/{{this.id}}/soft-delete" style="display:inline; margin-left:.3rem;"
+                          onsubmit="return confirm('Soft-delete this user? This cannot be undone.');">
+                      <button class="btn" type="submit">Soft delete</button>
+                    </form>
+                  {{/if}}
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <p>No users.</p>
+    {{/if}}
+  {{/if}}
+
+  {{!-- Cars list: pager + table + quick link --}}
+  {{#if (eq mode "cars")}}
+    {{#if pagination}}
+      <div class="pager-bar">
+        <div class="pager-left">
+          <a class="btn btn-secondary {{#if (eq pagination.page 1)}}btn-disabled{{/if}}" href="/admin/cars?page=1">First</a>
+          <a class="btn btn-secondary {{#if (eq pagination.page 1)}}btn-disabled{{/if}}" href="/admin/cars?page={{subtract pagination.page 1}}">Prev</a>
+          <form class="pager-form" method="get" action="/admin/cars">
+            <input type="number" min="1" max="{{pagination.totalPages}}" name="page" value="{{pagination.page}}" aria-label="Page number">
+            <span class="meta">of {{pagination.totalPages}}</span>
+          </form>
+          <a class="btn btn-secondary {{#if (eq pagination.page pagination.totalPages)}}btn-disabled{{/if}}" href="/admin/cars?page={{add pagination.page 1}}">Next</a>
+          <a class="btn btn-secondary {{#if (eq pagination.page pagination.totalPages)}}btn-disabled{{/if}}" href="/admin/cars?page={{pagination.totalPages}}">Last</a>
+        </div>
+        <div class="pager-right meta">
+          {{#if pagination.range}}Showing ID {{pagination.range.from}} – {{pagination.range.to}}{{/if}}
+        </div>
+      </div>
+    {{/if}}
+
+    {{#if cars.length}}
+      <div class="card" style="overflow:auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Posted by</th>
+              <th style="width:140px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each cars}}
+              <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.title}}</td>
+                <td>
+                  {{#if this.user_id}}
+                    {{#if this.owner_is_deleted}}
+                      <span class="badge">Deleted user</span>
+                    {{else}}
+                      <a href="/users/{{this.user_id}}" class="meta-link">
+                        {{#if this.owner_username}}{{this.owner_username}}{{else}}user #{{this.user_id}}{{/if}}
+                      </a>
+                    {{/if}}
+                  {{else}}
+                    {{#if this.owner_username}}
+                      {{#if this.owner_is_deleted}}
+                        <span class="badge">Deleted user</span>
+                      {{else}}
+                        {{this.owner_username}}
+                      {{/if}}
+                    {{else}}
+                      Unknown
+                    {{/if}}
+                  {{/if}}
+                </td>
+                <td><a class="btn" href="/cars/{{this.id}}">View</a></td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <p>No cars.</p>
+    {{/if}}
+  {{/if}}
+
+  {{!-- Tables: read-only grids via partial --}}
+  {{#if (eq mode "tables")}}
+    {{> admin-tables table=table tables=tables colNames=colNames rowsMatrix=rowsMatrix columns=columns pagination=pagination}}
+  {{/if}}
+
+</section>
+
+<style>
+  .admin-tabs{ margin:.5rem 0 1rem; display:flex; gap:.5rem; flex-wrap:wrap; }
+  .tile-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:.75rem;
+  }
+  .tile{
+    background:var(--card,#0b1324); border:1px solid #1f2940; border-radius:12px; padding:.9rem;
+  }
+  .tile-kpi{ font-size:1.6rem; font-weight:800; color:#dbeafe; }
+  .tile-label{ color:#9fb0c5; margin-top:.2rem; }
+
+  .pager-bar{
+    display:flex; justify-content:space-between; align-items:center;
+    gap:.75rem; margin:.6rem 0;
+  }
+  .pager-left{ display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; }
+  .pager-form{ display:flex; align-items:center; gap:.35rem; }
+  .pager-form input[type="number"]{
+    width:72px; padding:.35rem .45rem; border-radius:.4rem; border:1px solid #1f2940; background:#0b1324; color:#e5eefc;
+  }
+
+  .admin-table{ width:100%; border-collapse:collapse; }
+  .admin-table th, .admin-table td{
+    text-align:left; padding:.5rem; border-bottom:1px solid #0b1324;
+  }
+
+  .badge{
+    display:inline-block; padding:.15rem .45rem; border-radius:.4rem;
+    font-size:.85rem; line-height:1;
+    background:#0b1324; border:1px solid #1f2940; color:#c8d2e1;
+  }
+  .meta{ color:#9fb0c5; }
+  .btn-active{ background:#f59e0b !important; color:#1f1300 !important; }
+  .btn-disabled{ opacity:.5; pointer-events:none; }
+  .meta-link{ color:#cde3ff; text-decoration:underline; }
+</style>

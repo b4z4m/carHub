@@ -1,0 +1,149 @@
+{{!-- Car create form partial: text fields, number fields, selects, optional description, images, preview, submit. --}}
+
+<form id="car-create-form" class="form" action="/cars" method="post" enctype="multipart/form-data" novalidate>
+  {{!-- Required text fields: title, brand, model --}}
+  <label>Title <span aria-hidden="true" style="color:#fca5a5;">*</span>
+    <input
+      type="text"
+      name="title"
+      placeholder="Title"
+      value="{{form.title}}"
+      required
+      autocomplete="off"
+    >
+    <small class="hint">Clear, short title shown in listings.</small>
+  </label>
+
+  <label>Brand <span aria-hidden="true" style="color:#fca5a5;">*</span>
+    <input
+      type="text"
+      name="brand"
+      placeholder="Brand"
+      value="{{form.brand}}"
+      required
+      autocomplete="off"
+    >
+  </label>
+
+  <label>Model <span aria-hidden="true" style="color:#fca5a5;">*</span>
+    <input
+      type="text"
+      name="model"
+      placeholder="Model"
+      value="{{form.model}}"
+      required
+      autocomplete="off"
+    >
+  </label>
+
+  {{!-- Required numbers: year, price, mileage --}}
+  <label>Year <span aria-hidden="true" style="color:#fca5a5;">*</span>
+    <input
+      type="number"
+      name="year"
+      min="1900"
+      max="2100"
+      step="1"
+      inputmode="numeric"
+      placeholder="year"
+      value="{{form.year}}"
+      required
+    >
+  </label>
+
+  <label>Price (SEK) <span aria-hidden="true" style="color:#fca5a5;">*</span>
+    <input
+      type="number"
+      name="price"
+      min="0"
+      step="1"
+      inputmode="numeric"
+      placeholder="price"
+      value="{{form.price}}"
+      required
+    >
+  </label>
+
+  <label>Mileage (km) <span aria-hidden="true" style="color:#fca5a5;">*</span>
+    <input
+      type="number"
+      name="mileage"
+      min="0"
+      step="1"
+      inputmode="numeric"
+      placeholder="Miles"
+      value="{{form.mileage}}"
+      required
+    >
+  </label>
+
+  {{!-- Required selects: transmission, fuel, body type + horsepower number --}}
+  <label>Transmission <span aria-hidden="true" style="color:#fca5a5;">*</span>
+    <select name="transmission" required>
+      <option value="" {{#unless form.transmission}}selected{{/unless}}>— Select —</option>
+      <option value="Manual"    {{#if (eq form.transmission "Manual")}}selected{{/if}}>Manual</option>
+      <option value="Automatic" {{#if (eq form.transmission "Automatic")}}selected{{/if}}>Automatic</option>
+    </select>
+  </label>
+
+  <label>Fuel <span aria-hidden="true" style="color:#fca5a5;">*</span>
+    <select name="fuel" required>
+      <option value="" {{#unless form.fuel}}selected{{/unless}}>— Select —</option>
+      <option value="Petrol"   {{#if (eq form.fuel "Petrol")}}selected{{/if}}>Petrol</option>
+      <option value="Diesel"   {{#if (eq form.fuel "Diesel")}}selected{{/if}}>Diesel</option>
+      <option value="Hybrid"   {{#if (eq form.fuel "Hybrid")}}selected{{/if}}>Hybrid</option>
+      <option value="Electric" {{#if (eq form.fuel "Electric")}}selected{{/if}}>Electric</option>
+    </select>
+  </label>
+
+  <label>Horsepower (hp) <span aria-hidden="true" style="color:#fca5a5;">*</span>
+    <input
+      type="number"
+      name="horsepower"
+      min="0"
+      step="1"
+      inputmode="numeric"
+      placeholder="horsepower"
+      value="{{form.horsepower}}"
+      required
+    >
+  </label>
+
+  <label>Body type <span aria-hidden="true" style="color:#fca5a5;">*</span>
+    <select name="body_type" required>
+      <option value="" {{#unless form.body_type}}selected{{/unless}}>— Select —</option>
+      <option value="Sedan"     {{#if (eq form.body_type "Sedan")}}selected{{/if}}>Sedan</option>
+      <option value="SUV"       {{#if (eq form.body_type "SUV")}}selected{{/if}}>SUV</option>
+      <option value="Wagon"     {{#if (eq form.body_type "Wagon")}}selected{{/if}}>Wagon</option>
+      <option value="Hatchback" {{#if (eq form.body_type "Hatchback")}}selected{{/if}}>Hatchback</option>
+      <option value="Coupe"     {{#if (eq form.body_type "Coupe")}}selected{{/if}}>Coupe</option>
+    </select>
+  </label>
+
+  {{!-- Optional text: description --}}
+  <label>Description (optional)
+    <textarea
+      name="description"
+      rows="4"
+      placeholder="Short description...">{{form.description}}</textarea>
+  </label>
+
+  {{!-- Required images (multiple) + preview container --}}
+  <label>Images (you can select multiple) <span aria-hidden="true" style="color:#fca5a5;">*</span>
+    <input
+      id="images-input"
+      type="file"
+      name="images"
+      accept="image/*"
+      multiple
+      required
+    >
+    <small class="hint">Up to 12 images, JPG/PNG/WEBP/GIF, 5 MB each.</small>
+  </label>
+
+  <div id="image-preview" class="card-grid" style="margin-top:.5rem;"></div>
+
+  {{!-- Submit button + required fields hint --}}
+  <button type="submit">Save car</button>
+  <p class="meta" style="margin:.25rem 0 0 0;">Fields marked with <span aria-hidden="true" style="color:#fca5a5;">*</span> are required.</p>
+</form>

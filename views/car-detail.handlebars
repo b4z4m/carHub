@@ -1,6 +1,167 @@
-<!-- views/car-detail.handlebars -->
 <section class="page">
-  <h2>Bil #{{carId}}</h2>
-  <p>Här visar vi full info och bildkarusell senare.</p>
-  <p><a href="/cars">← Tillbaka till listan</a></p>
+  {{!-- Page data from server: { car, images[], canEdit, error? } --}}
+  <h2>{{car.title}}</h2>
+
+  {{#if error}}
+    <p class="error">{{error}}</p>
+  {{/if}}
+
+  {{!-- Hero image (first photo if it exists) --}}
+  {{#if images.[0]}}
+    <figure class="hero-card">
+      <img
+        src="/{{images.[0].path}}"
+        alt="{{images.[0].alt}}"
+        class="hero-img"
+      >
+    </figure>
+  {{/if}}
+
+  {{!-- Thumbnails (skip the first image) --}}
+  {{#if images.[1]}}
+    <div class="thumb-grid">
+      {{#each images}}
+        {{#unless @first}}
+          <div class="thumb-card">
+            <img
+              src="/{{this.path}}"
+              alt="{{this.alt}}"
+              class="thumb-img"
+            >
+            {{!-- Delete single image (only for owner/admin) --}}
+            {{#if ../canEdit}}
+              <form
+                action="/cars/{{../car.id}}/images/{{this.id}}?_method=DELETE"
+                method="post"
+                onsubmit="return confirm('Delete this photo?');"
+                class="inline-form"
+              >
+                <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+              </form>
+            {{/if}}
+          </div>
+        {{/unless}}
+      {{/each}}
+    </div>
+  {{/if}}
+
+  {{!-- Price + posted-by info + specs --}}
+  <div class="card" style="margin-top:1rem;">
+    <div class="meta-row">
+      {{#if car.price}}<div class="price">{{car.price}} SEK</div>{{/if}}
+      <div class="posted-by">
+        {{!-- Posted-by with deleted-user handling (no link if deleted) --}}
+        Posted by
+        {{#if car.user_id}}
+          {{#if car.owner_is_deleted}}
+            <span class="meta-link-disabled">Deleted user</span>
+          {{else}}
+            <a href="/users/{{car.user_id}}" class="meta-link">
+              {{#if car.owner_username}}{{car.owner_username}}{{else}}user #{{car.user_id}}{{/if}}
+            </a>
+          {{/if}}
+        {{else}}
+          {{#if car.owner_username}}
+            {{#if car.owner_is_deleted}}
+              <span class="meta-link-disabled">Deleted user</span>
+            {{else}}
+              {{car.owner_username}}
+            {{/if}}
+          {{else}}
+            Unknown
+          {{/if}}
+        {{/if}}
+      </div>
+    </div>
+
+    <h3>Specifications</h3>
+    <p>
+      {{#if car.brand}}<strong>Brand:</strong> {{car.brand}}<br>{{/if}}
+      {{#if car.model}}<strong>Model:</strong> {{car.model}}<br>{{/if}}
+      {{#if car.year}}<strong>Year:</strong> {{car.year}}<br>{{/if}}
+      {{#if car.mileage}}<strong>Mileage:</strong> {{car.mileage}} km<br>{{/if}}
+      {{#if car.transmission}}<strong>Transmission:</strong> {{car.transmission}}<br>{{/if}}
+      {{#if car.fuel}}<strong>Fuel:</strong> {{car.fuel}}<br>{{/if}}
+      {{#if car.horsepower}}<strong>Horsepower:</strong> {{car.horsepower}} hp<br>{{/if}}
+      {{#if car.body_type}}<strong>Body type:</strong> {{car.body_type}}<br>{{/if}}
+    </p>
+
+    {{#if car.description}}
+      <p><strong>Description:</strong><br>{{car.description}}</p>
+    {{/if}}
+  </div>
+
+  {{!-- Add more photos (only for owner/admin) --}}
+  {{#if canEdit}}
+    <div class="card" style="margin-top:1rem;">
+      <h3>Add more photos</h3>
+      {{!-- Uploads go to POST /cars/:id/images (handled by uploadMany) --}}
+      <form action="/cars/{{car.id}}/images" method="post" enctype="multipart/form-data" class="form">
+        <label>Photos (you can select multiple)
+          <input type="file" name="images" multiple accept="image/*">
+        </label>
+        <div class="actions">
+          <button type="submit" class="btn">Upload photos</button>
+        </div>
+      </form>
+    </div>
+  {{/if}}
+
+  {{!-- Manage car actions (edit/delete) for owner/admin --}}
+  {{#if canEdit}}
+    <p class="actions-row">
+      <a class="btn" href="/cars/{{car.id}}/edit">✏️ Edit car</a>
+
+      {{!-- Delete the whole car (method-override) --}}
+      <form action="/cars/{{car.id}}?_method=DELETE" method="post" onsubmit="return confirm('Delete this car?');" class="inline-form">
+        <button type="submit" class="btn btn-danger">
+          🗑️ Delete car
+        </button>
+      </form>
+    </p>
+  {{/if}}
+
+  <p style="margin-top:1rem;"><a href="/cars">← Back to list</a></p>
 </section>
+
+{{!-- Local styles for this page (scoped to the view) --}}
+<style>
+  .hero-card{
+    margin:0; padding:0; border-radius:12px; overflow:hidden;
+    border:1px solid #1f2940; background:#0b1324;
+  }
+  .hero-img{
+    display:block; width:100%; height:330px; object-fit:cover;
+  }
+
+  .thumb-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:.75rem; margin-top:.75rem;
+  }
+  .thumb-card{
+    background:var(--card); border:1px solid #1f2937; border-radius:12px; padding:.5rem;
+  }
+  .thumb-img{
+    width:100%; height:140px; object-fit:cover; border-radius:8px; display:block;
+    border:1px solid #1f2940; background:#0b1324;
+  }
+
+  .meta-row{
+    display:flex; gap:.75rem; align-items:center; justify-content:space-between;
+    margin:0 0 .5rem 0; flex-wrap:wrap;
+  }
+  .price{
+    font-size:1.15rem; font-weight:700; background:#0b1324; color:#dbeafe;
+    padding:.35rem .6rem; border-radius:.6rem; border:1px solid #1f2940;
+  }
+  .meta-link{ color:#cde3ff; text-decoration:underline; }
+  .actions-row{
+    display:flex; gap:.5rem; flex-wrap:wrap; margin-top:1rem;
+  }
+  .inline-form{ display:inline; margin:0; padding:0; }
+  .btn.btn-danger{ background:#ef4444; color:white; }
+  @media (max-width: 520px){
+    .hero-img{ height:240px; }
+    .thumb-grid{ grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); }
+  }
+</style>

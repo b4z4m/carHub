@@ -1,0 +1,109 @@
+<section class="page">
+  <h2>Add car</h2>
+
+  {{!-- Error flash from POST /cars (shows server-side validation message) --}}
+  {{#if error}}
+    <p class="error">{{error}}</p>
+  {{/if}}
+
+  {{!-- Main car creation form (pulled in as partial) --}}
+  {{> car-new-form }}
+  
+  {{!-- Back link to the listing --}}
+  <p style="margin-top:.75rem;">
+    <a href="/cars">← Back to list</a>
+  </p>
+</section>
+
+{{!-- Small page-scoped enhancements (preview + tiny helpers) --}}
+<style>
+  .hint { color:#9fb0c5; display:block; margin-top:.25rem; font-size:.85rem; }
+  #image-preview img{
+    width:100%; height:140px; object-fit:cover; border-radius:10px;
+    border:1px solid #1f2940; background:#0b1324;
+  }
+</style>
+
+<script>
+  (function () {
+    // Setup: form + image preview targets
+    const form = document.getElementById('car-create-form');
+    const imagesInput = document.getElementById('images-input');
+    const preview = document.getElementById('image-preview');
+    const MAX_FILES = 12;
+
+    // Friendly required messages (client-side)
+    const requiredMap = {
+      title: 'Please fill out the Title.',
+      brand: 'Please fill out the Brand.',
+      model: 'Please fill out the Model.',
+      year: 'Please enter a valid Year (1900–2100).',
+      price: 'Please enter a valid Price (SEK).',
+      mileage: 'Please enter a valid Mileage (km).',
+      transmission: 'Please select a Transmission.',
+      fuel: 'Please select a Fuel type.',
+      horsepower: 'Please enter Horsepower (hp).',
+      body_type: 'Please select a Body type.',
+      images: 'Please upload at least one image.'
+    };
+
+    function setCustomValidityMessages(scope) {
+      scope.querySelectorAll('input[required], select[required], textarea[required]').forEach(el => {
+        const name = el.getAttribute('name');
+        if (!name) return;
+        const msg = requiredMap[name];
+        el.addEventListener('invalid', () => {
+          if (el.validity.valueMissing || el.validity.typeMismatch || el.validity.rangeUnderflow || el.validity.rangeOverflow) {
+            el.setCustomValidity(msg || 'Please fill out this field.');
+          }
+        });
+        el.addEventListener('input', () => el.setCustomValidity(''));
+        el.addEventListener('change', () => el.setCustomValidity(''));
+      });
+    }
+    setCustomValidityMessages(form);
+
+    // Live image preview (cards)
+    function renderPreview(files) {
+      preview.innerHTML = '';
+      if (!files || !files.length) return;
+
+      const arr = Array.from(files).slice(0, MAX_FILES);
+      arr.forEach(file => {
+        if (!file.type || !file.type.startsWith('image/')) return;
+        const url = URL.createObjectURL(file);
+        const card = document.createElement('div');
+        card.className = 'card';
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = file.name;
+        card.appendChild(img);
+        preview.appendChild(card);
+      });
+
+      if (files.length > MAX_FILES) {
+        alert(`Only the first ${MAX_FILES} images will be uploaded.`);
+      }
+    }
+
+    if (imagesInput) {
+      imagesInput.addEventListener('change', () => renderPreview(imagesInput.files));
+    }
+
+    // Submit guard: require at least one image and max 12
+    form.addEventListener('submit', (e) => {
+      if (!imagesInput || !imagesInput.files || imagesInput.files.length === 0) {
+        imagesInput.setCustomValidity(requiredMap['images']);
+        imagesInput.reportValidity();
+        e.preventDefault();
+        return false;
+      }
+      if (imagesInput.files.length > MAX_FILES) {
+        alert(`Please select up to ${MAX_FILES} images.`);
+        e.preventDefault();
+        return false;
+      }
+      return true;
+    });
+  })();
+</script>

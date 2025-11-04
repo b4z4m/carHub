@@ -1,51 +1,378 @@
-/* public/css/styles.css */
-:root{
-  --bg:#0f172a;       /* header bakgrund (slate-900) */
-  --text:#e2e8f0;     /* ljus text (slate-200) */
-  --link:#38bdf8;     /* cyan */
-  --muted:#94a3b8;    /* slate-400 */
-  --card:#111827;     /* slate-900 + */
-  --accent:#f59e0b;   /* amber */
+/* css for my whole site */
+
+/* Base color design */
+:root {
+    --bg: #0b1020;
+    /* Pagebackground */
+    --surface: #12182a;
+    /* cards/forms */
+    --surface-2: #0f1424;
+    --text: #e8edf5;
+    /* primary text */
+    --muted: #a6b0c3;
+    --border: #1f2940;
+    /* borders/dividers */
+
+    --brand: #3aa0ff;
+    --brand-contrast: #04121f;
+
+    --ok: #22c55e;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+
+    --ring: #7cc0ff80;
 }
 
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0b1020;color:#e6edf3;line-height:1.6}
-
-.site-header{
-  position: sticky; top:0; z-index:10;
-  background:var(--bg); border-bottom:1px solid #1f2937;
-}
-.nav{
-  max-width:1000px; margin:0 auto; display:flex; align-items:center; gap:1rem;
-  padding:0.8rem 1rem;
-}
-.brand{color:var(--text); font-weight:700; letter-spacing:.5px; text-decoration:none;}
-.links{margin-left:auto; display:flex; gap:1rem; align-items:center}
-.links a{color:var(--text); text-decoration:none; opacity:.9}
-.links a:hover{opacity:1; text-decoration:underline}
-.logout button{background:#ef4444; color:white; border:none; padding:.4rem .7rem; border-radius:6px; cursor:pointer}
-.logout button:hover{filter:brightness(1.1)}
-
-.container{max-width:1000px; margin:1rem auto; padding:0 1rem}
-
-.hero{padding:2.5rem 1rem; background:#0e1726; border:1px solid #1e293b; border-radius:12px}
-.hero h1{margin:0 0 .5rem 0; font-size:clamp(1.8rem,4vw,2.4rem)}
-.btn{
-  display:inline-block; background:var(--link); color:#003544; font-weight:700;
-  padding:.6rem 1rem; border-radius:10px; text-decoration:none; margin-top:.8rem
+/* Base settings for box model */
+* {
+    box-sizing: border-box
 }
 
-.page h2{margin-top:0}
-.form{display:grid; gap:.8rem; max-width:420px}
-.form input,.form textarea{
-  width:100%; padding:.6rem .7rem; border-radius:10px; border:1px solid #1f2a44; background:#0b1324; color:#dbeafe
+html {
+    -webkit-text-size-adjust: 100%
 }
-.form button{background:var(--accent); border:0; color:#1f1300; padding:.5rem .9rem; border-radius:8px; cursor:pointer}
 
-.card-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1rem}
-.card{background:var(--card); border:1px solid #1f2937; border-radius:12px; padding:1rem}
-.card h3{margin:.2rem 0 .4rem}
+/* prevent font scaling in landscape iOS */
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    /* prevent horizontal scroll for phone */
+}
 
-.error{color:#ef4444}
+img,
+video {
+    max-width: 100%;
+    height: auto;
+    display: block
+}
 
-.site-footer{padding:1rem; text-align:center; color:var(--muted)}
+/* header layout */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: saturate(140%) blur(6px);
+}
+
+/* nav layout */
+.nav {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: .8rem 1rem;
+}
+
+.brand {
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-decoration: none;
+}
+
+.links {
+    margin-left: auto;
+    display: flex;
+    gap: .75rem;
+    align-items: center
+}
+
+.links a {
+    color: var(--text);
+    text-decoration: none;
+    opacity: .92;
+    padding: .35rem .55rem;
+    border-radius: .5rem;
+}
+
+.links a:hover {
+    opacity: 1;
+    background: #0e162b;
+}
+
+.logout button {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: .45rem .7rem;
+    border-radius: .6rem;
+    cursor: pointer;
+}
+
+.logout button:hover {
+    filter: brightness(1.08)
+}
+
+/* layout container */
+.container {
+    max-width: 1100px;
+    margin: 1rem auto;
+    padding: 0 1rem;
+}
+
+.hero {
+    padding: 2rem 1rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+.hero h1 {
+    margin: 0 0 .5rem 0;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+}
+
+/* button and links */
+.btn {
+    display: inline-block;
+    background: var(--brand);
+    color: var(--brand-contrast);
+    font-weight: 700;
+    padding: .6rem 1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform .04s ease, filter .15s ease;
+}
+
+.btn:hover {
+    filter: brightness(1.07)
+}
+
+.btn:active {
+    transform: translateY(1px)
+}
+
+.btn.secondary {
+    background: #334155;
+    color: var(--text);
+}
+
+/* form and errors */
+.form {
+    display: grid;
+    gap: .9rem;
+    max-width: 920px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1rem;
+}
+
+.form label {
+    display: grid;
+    gap: .35rem;
+    font-size: .95rem;
+    color: var(--muted);
+}
+
+.form input,
+.form textarea,
+.form select {
+    width: 100%;
+    padding: .65rem .75rem;
+    border-radius: 10px;
+    border: 1px solid #1b2440;
+    background: #0e1528;
+    color: #e6efff;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.form textarea {
+    resize: vertical;
+    min-height: 110px
+}
+
+.form input::placeholder,
+.form textarea::placeholder {
+    color: #93a0b8
+}
+
+.form input:focus,
+.form textarea:focus,
+.form select:focus {
+    border-color: #2a5fbf;
+    box-shadow: 0 0 0 3px var(--ring);
+    background: #0d1426;
+}
+
+.error {
+    color: var(--danger);
+    font-weight: 600
+}
+
+.form .actions {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+}
+
+/* card */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1rem;
+}
+
+.card h3 {
+    margin: .35rem 0 .5rem
+}
+
+.card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #0b1324;
+}
+
+/* footer */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.site-footer {
+    padding: 1rem;
+    text-align: center;
+    color: var(--muted);
+    margin-top: auto;
+}
+
+/* utility classes */
+:where(h1, h2, h3, section, [id]) {
+    scroll-margin-top: 72px
+}
+
+/* filter section on cars page */
+#carFilters {
+    margin-bottom: 1rem;
+}
+
+#carFilters .btn {
+    margin-top: .2rem
+}
+
+#carFilters .actions .btn.secondary {
+    background: #263247;
+}
+
+#carFilters .actions .btn.secondary:hover {
+    filter: brightness(1.05);
+}
+
+/* desktop filter grid */
+@media (min-width: 700px) {
+    #carFilters>div {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+/* responsive nav */
+@media (max-width: 640px) {
+    .nav {
+        flex-wrap: wrap;
+        gap: .5rem .75rem
+    }
+
+    .brand {
+        order: 1
+    }
+
+    .logout {
+        order: 2;
+        margin-left: auto
+    }
+
+    .links {
+        order: 3;
+        flex-basis: 100%;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: .5rem .75rem;
+        margin-left: 0;
+    }
+}
+
+/* mobile layout adjustments */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 .75rem
+    }
+
+    .hero {
+        padding: 1.35rem .9rem
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr
+    }
+
+    .btn {
+        padding: .7rem 1rem;
+        border-radius: 12px
+    }
+
+    .form {
+        padding: .85rem
+    }
+
+    .form input,
+    .form select {
+        padding: .7rem .8rem
+    }
+}
+
+/* extra narrow layout */
+@media (max-width: 360px) {
+    .card-grid {
+        grid-template-columns: 1fr
+    }
+}
+
+/* disabled meta links */
+.meta-link-disabled {
+    color: #1f2a44;
+    text-decoration: none;
+    cursor: default;
+}
+
+/* search row */
+.search-row {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+.search-row input {
+    flex: 1;
+}

@@ -1,9 +1,87 @@
-<!-- views/profile.handlebars -->
+{{!-- Profile page: shows logged-in user's avatar, username, and lets them edit bio or avatar --}}
 <section class="page">
-  <h2>Profil</h2>
+  <h2>Your profile</h2>
+
+  {{!-- Optional success or error messages from server --}}
+  {{#if error}}   <p class="error">{{error}}</p>{{/if}}
+  {{#if success}} <p class="success">{{success}}</p>{{/if}}
+
   {{#if user}}
-    <p>Användare: {{user.username}}</p>
+    {{!-- Main container for all profile details --}}
+    <div class="card" style="display:grid; gap:1rem;">
+      {{!-- Public info: avatar preview, username, and link to public page --}}
+      <div>
+        <h3>Public info</h3>
+        <p class="meta">This is what others will see on your public profile.</p>
+
+        <div style="display:flex; align-items:center; gap:1rem; margin:.5rem 0;">
+          {{#if user.avatar_path}}
+            <img src="/{{user.avatar_path}}" alt="{{user.username}} avatar"
+                 style="width:96px;height:96px;object-fit:cover;border-radius:50%;border:1px solid #1f2940;background:#0b1324;">
+          {{else}}
+            <div style="width:96px;height:96px;border-radius:50%;display:grid;place-items:center;border:1px solid #1f2940;background:#0b1324;color:#9fb0c5;">
+              No avatar
+            </div>
+          {{/if}}
+          <div>
+            <p style="margin:.2rem 0;"><strong>Username:</strong> {{user.username}}</p>
+            <p class="meta" style="margin:.2rem 0;">User ID: {{user.id}}</p>
+            <p class="meta" style="margin:.2rem 0;">
+              Public page: <a class="meta-link" href="/users/{{user.id}}">/users/{{user.id}}</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {{!-- Two-column grid for avatar upload and bio edit --}}
+      <div class="form-grid" style="display:grid; gap:1rem;">
+        {{!-- Avatar upload form --}}
+        <div class="card">
+          <h4 style="margin-top:0;">Avatar</h4>
+          <form class="form" action="/profile/avatar" method="post" enctype="multipart/form-data">
+            <label>Choose image (jpg/png/webp/gif, max 5 MB)
+              <input type="file" name="avatar" accept="image/*" required>
+            </label>
+            <div class="actions" style="display:flex; gap:.5rem; flex-wrap:wrap;">
+              <button type="submit" class="btn">Upload avatar</button>
+
+              {{!-- Delete avatar form (separate for safety) --}}
+              {{#if user.avatar_path}}
+                <form action="/profile/avatar/delete" method="post" onsubmit="return confirm('Remove avatar?');" style="display:inline;">
+                  <button type="submit" class="btn" style="background:#ef4444;color:white;">Remove avatar</button>
+                </form>
+              {{/if}}
+            </div>
+          </form>
+        </div>
+
+        {{!-- Bio edit form --}}
+        <div class="card">
+          <h4 style="margin-top:0;">Bio</h4>
+          <form class="form" action="/profile/bio" method="post" novalidate>
+            <label>Short bio (optional)
+              <textarea name="bio" rows="4" placeholder="Tell us something about yourself...">{{user.bio}}</textarea>
+            </label>
+            <div class="actions">
+              <button type="submit" class="btn">Save bio</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Navigation link to public profile --}}
+    <p style="margin-top:1rem;"><a href="/users/{{user.id}}">← Back to your public page</a></p>
   {{else}}
-    <p>Du behöver vara inloggad för att se profil.</p>
+    {{!-- Message for non-authenticated visitors --}}
+    <p>You need to be logged in to see your profile.</p>
   {{/if}}
 </section>
+
+{{!-- Local styles for messages and meta text --}}
+<style>
+  .success{ color:#16a34a; }
+  .error{ color:#ef4444; }
+  .meta{ color:#9fb0c5; }
+  .meta-link{ color:#cde3ff; text-decoration:underline; }
+</style>

@@ -1,19 +1,44 @@
-<!-- views/contact.handlebars -->
-<section class="page">
-  <h2>Kontakt</h2>
-  <p>Har du frågor? Hör av dig.</p>
+{{!-- Purpose: simple contact page with email/phone + quick actions --}}
 
-  <form class="form" method="post" action="#">
-    <label>Namn
-      <input type="text" name="name" placeholder="Ditt namn" />
-    </label>
-    <label>E-post
-      <input type="email" name="email" placeholder="din@mail.se" />
-    </label>
-    <label>Meddelande
-      <textarea name="message" rows="4" placeholder="Skriv här..."></textarea>
-    </label>
-    <button type="submit" disabled>TBD</button>
-    <small>(Vi kopplar POST senare – just nu bara layout.)</small>
-  </form>
+<section class="page">
+  <h2>Contact</h2>
+
+  {{!-- Main card with all contact info --}}
+  <div class="card contact-card">
+    {{!-- Short lead/intro sentence --}}
+    <p class="lead">Got a question or feedback? Reach out anytime.</p>
+
+    {{!-- Direct contact methods (email + phone) --}}
+    <ul class="contact-list">
+      <li>
+        📧 <strong>Email:</strong>
+        <a class="meta-link" href="mailto:azba21xx@student.ju.se?subject=CarHub%20support">azba21xx@student.ju.se</a>
+      </li>
+      <li>
+        📱 <strong>Phone:</strong>
+        <a class="meta-link" href="tel:+46723335453">+46 72 333 54 53</a>
+      </li>
+    </ul>
+
+    {{!-- Small note about response time --}}
+    <div class="hours">
+      <p class="muted">I’ll reply as fast as I can.</p>
+    </div>
+
+    {{!-- Quick action buttons: open email client or go back home --}}
+    <div class="actions">
+      <a class="btn" href="mailto:azba21xx@student.ju.se?subject=CarHub%20support">Send email</a>
+      <a class="btn secondary" href="/">← Back to home</a>
+    </div>
+  </div>
 </section>
+
+<style>
+  /* Page-scoped styles for spacing/typography on this view only */
+  .contact-card{ padding:1rem }
+  .contact-card .lead{ margin:.25rem 0 1rem; color:var(--muted) }
+  .contact-list{ list-style:none; padding:0; margin:0 0 1rem 0; display:grid; gap:.5rem }
+  .contact-list li strong{ color:var(--text) }
+  .hours .muted{ color:var(--muted); margin:0 0 1rem }
+  .actions{ display:flex; gap:.5rem; flex-wrap:wrap }
+</style>

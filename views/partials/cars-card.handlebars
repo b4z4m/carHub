@@ -1,0 +1,54 @@
+{{!-- Single car card: image, title, specs, price/hp, view link, publisher line --}}
+
+<li class="card">
+  {{!-- Card image (first image only) --}}
+  {{#if first_image_path}}
+    <img
+      src="/{{first_image_path}}"
+      alt="{{title}}"
+      style="height:150px;object-fit:cover;border-radius:10px;width:100%;border:1px solid #1f2940;background:#0b1324;"
+    >
+  {{/if}}
+
+  {{!-- Title --}}
+  <h3 style="margin-top:.6rem;">{{title}}</h3>
+
+  {{!-- Specs line: year • body • fuel • transmission --}}
+  <p class="meta">
+  {{#if this.year}}{{this.year}}{{/if}}
+  {{#if this.body_type}} • {{this.body_type}}{{/if}}
+  {{#if this.fuel}} • {{this.fuel}}{{/if}}
+  {{#if this.transmission}} • {{this.transmission}}{{/if}}
+</p>
+
+  {{!-- Price + horsepower (formatted price helper) --}}
+{{#if price}}<p><strong>{{formatPrice price}} SEK</strong></p>{{/if}}
+  {{#if horsepower}}<p>{{horsepower}} hp</p>{{/if}}
+
+  {{!-- View details link --}}
+  <a class="btn" href="/cars/{{id}}">View</a>
+
+  {{!-- Publisher line (safe for deleted/unknown owners) --}}
+  <p class="meta" style="margin-top:.5rem;">
+    Posted by
+    {{#if user_id}}
+      {{#if owner_is_deleted}}
+        <span class="meta-link-disabled">Deleted user</span>
+      {{else}}
+        <a href="/users/{{user_id}}" class="meta-link">
+          {{#if owner_username}}{{owner_username}}{{else}}user #{{user_id}}{{/if}}
+        </a>
+      {{/if}}
+    {{else}}
+      {{#if owner_username}}
+        {{#if owner_is_deleted}}
+          <span class="meta-link-disabled">Deleted user</span>
+        {{else}}
+          {{owner_username}}
+        {{/if}}
+      {{else}}
+        Unknown
+      {{/if}}
+    {{/if}}
+  </p>
+</li>

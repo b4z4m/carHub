@@ -1,0 +1,64 @@
+{{!-- Registration page: create a new user account (username + password + confirm). --}}
+<section class="page">
+  <h2>Create account</h2>
+
+  {{!-- Error area: shows server-side validation or "username taken" messages --}}
+  {{#if error}}
+    <p class="error" role="alert">{{error}}</p>
+  {{/if}}
+
+  {{!-- Main registration form (simple now; avatar/bio handled later on profile edit) --}}
+  <form class="form" action="/register" method="post" novalidate style="max-width:520px;">
+    {{!-- Username field (required) --}}
+    <label>Username
+      <input
+        type="text"
+        name="username"
+        inputmode="text"
+        autocomplete="username"
+        placeholder="e.g., johndoe"
+        value="{{form.username}}"
+        required
+        aria-required="true"
+      >
+    </label>
+
+    {{!-- Password field (required, min length 6) --}}
+    <label>Password
+      <input
+        type="password"
+        name="password"
+        autocomplete="new-password"
+        placeholder="At least 6 characters"
+        required
+        aria-required="true"
+        minlength="6"
+      >
+    </label>
+
+    {{!-- Confirm password field (must match password) --}}
+    <label>Confirm password
+      <input
+        type="password"
+        name="confirm_password"
+        autocomplete="new-password"
+        placeholder="Repeat your password"
+        required
+        aria-required="true"
+        minlength="6"
+      >
+    </label>
+
+    {{!-- Helper text about username policy (non-changeable) --}}
+    <p class="meta">By creating an account you agree to keep your username permanent (cannot be changed later).</p>
+
+    {{!-- Submit button --}}
+    <button type="submit" class="btn">Create account</button>
+  </form>
+
+  {{!-- Link to login for users who already have an account --}}
+  <p class="meta" style="margin-top:.75rem;">
+    Already have an account?
+    <a class="meta-link" href="/login">Log in</a>.
+  </p>
+</section>

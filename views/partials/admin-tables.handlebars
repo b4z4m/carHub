@@ -1,0 +1,170 @@
+{{!-- chatgpt wrote this completly --}}
+{{!-- views/partials/admin-tables.handlebars --}}
+{{!-- Förväntad data: table, tables[], colNames[], rowsMatrix[], columns[], pagination{...} --}}
+
+<div class="card" style="margin-bottom:.75rem;">
+  <form method="get" action="/admin/tables" class="form" style="display:flex; gap:.6rem; flex-wrap:wrap; align-items:end;">
+    <label>Table
+      <select name="t">
+        {{#each tables}}
+          <option value="{{this}}" {{#if (eq ../table this)}}selected{{/if}}>{{this}}</option>
+        {{/each}}
+      </select>
+    </label>
+    <label>Page
+      <input type="number" min="1" name="page" value="{{pagination.page}}">
+    </label>
+    <label>Page size
+      <input type="number" min="10" max="200" name="pageSize" value="{{pagination.pageSize}}">
+    </label>
+    <button type="submit" class="btn">Go</button>
+  </form>
+</div>
+
+{{#if pagination}}
+  <div class="pager-bar">
+    <div class="pager-left">
+      <a class="btn btn-secondary {{#if (eq pagination.page 1)}}btn-disabled{{/if}}"
+         href="/admin/tables?t={{table}}&page=1&pageSize={{pagination.pageSize}}">First</a>
+      <a class="btn btn-secondary {{#if (eq pagination.page 1)}}btn-disabled{{/if}}"
+         href="/admin/tables?t={{table}}&page={{subtract pagination.page 1}}&pageSize={{pagination.pageSize}}">Prev</a>
+
+      <form class="pager-form" method="get" action="/admin/tables">
+        <input type="hidden" name="t" value="{{table}}">
+        <input type="hidden" name="pageSize" value="{{pagination.pageSize}}">
+        <input type="number" min="1" max="{{pagination.totalPages}}" name="page" value="{{pagination.page}}" aria-label="Page number">
+        <span class="meta">of {{pagination.totalPages}}</span>
+      </form>
+
+      <a class="btn btn-secondary {{#if (eq pagination.page pagination.totalPages)}}btn-disabled{{/if}}"
+         href="/admin/tables?t={{table}}&page={{add pagination.page 1}}&pageSize={{pagination.pageSize}}">Next</a>
+      <a class="btn btn-secondary {{#if (eq pagination.page pagination.totalPages)}}btn-disabled{{/if}}"
+         href="/admin/tables?t={{table}}&page={{pagination.totalPages}}&pageSize={{pagination.pageSize}}">Last</a>
+    </div>
+    <div class="pager-right meta">
+      {{#if pagination.range}}Showing ID {{pagination.range.from}} – {{pagination.range.to}}{{/if}}
+    </div>
+  </div>
+{{/if}}
+
+<div class="card" style="overflow:auto;">
+  {{!-- Rendera header från colNames (förberedd i servern) --}}
+  {{#if colNames.length}}
+    <table class="admin-table">
+      <thead>
+        <tr>
+          {{#each colNames}}
+            <th>{{this}}</th>
+          {{/each}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#if rowsMatrix.length}}
+          {{#each rowsMatrix}}
+            <tr>
+              {{#each this}}
+                <td>
+                  {{!-- Visa "—" endast för tom sträng (null/undefined blev '' på serversidan) --}}
+                  {{#if (eq this '')}}<span class="meta">—</span>{{else}}{{this}}{{/if}}
+                </td>
+              {{/each}}
+            </tr>
+          {{/each}}
+        {{else}}
+          <tr><td colspan="{{colNames.length}}" class="meta">No rows.</td></tr>
+        {{/if}}
+      </tbody>
+    </table>
+  {{!-- Fallback om colNames inte kom med av någon anledning --}}
+  {{else}}
+    <p class="meta">No columns metadata provided for <strong>{{table}}</strong>.</p>
+  {{/if}}
+</div>
+
+<style>
+  /* ========= Readable data grid (ingen markup/JS) ========= */
+
+  .admin-table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    table-layout:auto;                  /* låt innehåll styra bredden */
+    background:#0b1324;
+    border:1px solid #1f2940;
+    border-radius:10px;
+    overflow:hidden;
+    font-size:.95rem;
+    min-width:980px;                    /* så inte allting krymper för hårt */
+  }
+
+  .admin-table thead th{
+    position:sticky; top:0; z-index:1;
+    background:#0e1830;
+    color:#cfe2ff;
+    font-weight:700;
+    padding:.5rem .6rem;
+    border-bottom:1px solid #1f2940;
+    height:40px;
+    white-space:nowrap;
+  }
+
+  .admin-table tbody td{
+    position:relative;
+    padding:.45rem .6rem;
+    border-bottom:1px solid #0d172c;
+    border-right:1px solid #0d172c;
+    vertical-align:top;
+    background:#0b1324;
+
+    /* Standard: håll en rad med ellipsis (snabb överblick) */
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+
+    /* Rimlig maxbredd per cell; viktiga fält tar ändå mer utrymme pga table-layout:auto */
+    max-width:26ch;
+  }
+  .admin-table tbody td:last-child{ border-right:none; }
+
+  /* Zebra + hover på raden för tydlig radläsning */
+  .admin-table tbody tr:nth-child(even) td{ background:#0d1527; }
+  .admin-table tbody tr:hover td{ background:#12203e; }
+
+  /* Smal id-kolumn, högerställd */
+  .admin-table thead th:first-child,
+  .admin-table tbody td:first-child{
+    width:72px; text-align:right; max-width:72px;
+  }
+
+  /* Ge 2:a kolumnen (ofta title/username) lite mer plats */
+  .admin-table thead th:nth-child(2),
+  .admin-table tbody td:nth-child(2){
+    max-width:32ch;
+  }
+
+  /* ------- Smart läsning: expandera cell på hover ------- */
+  .admin-table tbody td:hover{
+    /* växla till multi-rad vid hover */
+    white-space:normal;                 /* låt radbrytas */
+    word-break:break-word;
+    overflow:auto;
+    max-width:clamp(34ch, 46vw, 80ch);  /* tillfälligt större läsyta */
+    z-index:5;
+    box-shadow:0 6px 18px rgba(0,0,0,.35), 0 0 0 1px #1f2940 inset;
+    border-radius:6px;
+  }
+
+  /* Visa tydligare "—" för tomma celler */
+  .admin-table td .meta{ opacity:.8; font-style:italic; }
+
+  /* Liten finputs för riktigt breda tabeller: gör det lättare att scrolla horisontellt */
+  .card > .admin-table{
+    display:block;                      /* spelar fint med overflow:auto på föräldern */
+  }
+
+  /* (Frivilligt) Om du senare lägger data-table="{{table}}" på <table> kan du finjustera per tabell:
+     .admin-table[data-table="cars"] td:nth-child(13),
+     .admin-table[data-table="users"] td:nth-child(7),
+     .admin-table[data-table="car_images"] td:nth-child(3){ max-width:40ch; }
+  */
+</style>

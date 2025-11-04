@@ -1,0 +1,148 @@
+<section class="page">
+  <h2>Edit: {{car.title}}</h2>
+
+  {{!-- Error flash (shown if server returns validation error) --}}
+  {{#if error}}
+    <p class="error">{{error}}</p>
+  {{/if}}
+
+  {{!-- Edit form (uses PUT via method-override) --}}
+  <form class="form" action="/cars/{{car.id}}?_method=PUT" method="post" novalidate>
+    {{!-- ======= Basic info (required) ======= --}}
+    <label>Title
+      <input
+        type="text"
+        name="title"
+        required
+        placeholder="e.g., Audi RS3"
+        value="{{car.title}}"
+      >
+      {{!-- HTML required prevents empty submit; server validates too --}}
+    </label>
+
+    <label>Brand
+      <input
+        type="text"
+        name="brand"
+        required
+        placeholder="Audi"
+        value="{{car.brand}}"
+      >
+    </label>
+
+    <label>Model
+      <input
+        type="text"
+        name="model"
+        required
+        placeholder="RS3"
+        value="{{car.model}}"
+      >
+    </label>
+
+    {{!-- ======= Numeric/specs (required) ======= --}}
+    <label>Year
+      <input
+        type="number"
+        name="year"
+        required
+        min="1900"
+        max="2100"
+        placeholder="2022"
+        value="{{car.year}}"
+      >
+    </label>
+
+    <label>Price (SEK)
+      <input
+        type="number"
+        name="price"
+        required
+        min="0"
+        step="1"
+        placeholder="599000"
+        value="{{car.price}}"
+      >
+    </label>
+
+    <label>Mileage (km)
+      <input
+        type="number"
+        name="mileage"
+        required
+        min="0"
+        step="1"
+        placeholder="25000"
+        value="{{car.mileage}}"
+      >
+    </label>
+
+    {{!-- ======= Selects (required) ======= --}}
+    <label>Transmission
+      <select name="transmission" required>
+        <option value="" {{#unless car.transmission}}selected{{/unless}}>—</option>
+        <option value="Manual"    {{#if (eq car.transmission "Manual")}}selected{{/if}}>Manual</option>
+        <option value="Automatic" {{#if (eq car.transmission "Automatic")}}selected{{/if}}>Automatic</option>
+      </select>
+      {{!-- Values are English to match server-side filters --}}
+    </label>
+
+    <label>Fuel
+      <select name="fuel" required>
+        <option value="" {{#unless car.fuel}}selected{{/unless}}>—</option>
+        <option value="Petrol"   {{#if (eq car.fuel "Petrol")}}selected{{/if}}>Petrol</option>
+        <option value="Diesel"   {{#if (eq car.fuel "Diesel")}}selected{{/if}}>Diesel</option>
+        <option value="Hybrid"   {{#if (eq car.fuel "Hybrid")}}selected{{/if}}>Hybrid</option>
+        <option value="Electric" {{#if (eq car.fuel "Electric")}}selected{{/if}}>Electric</option>
+      </select>
+    </label>
+
+    <label>Horsepower (hp)
+      <input
+        type="number"
+        name="horsepower"
+        required
+        min="0"
+        step="1"
+        placeholder="400"
+        value="{{car.horsepower}}"
+      >
+    </label>
+
+    <label>Body type
+      <select name="body_type" required>
+        <option value="" {{#unless car.body_type}}selected{{/unless}}>—</option>
+        <option value="Sedan"     {{#if (eq car.body_type "Sedan")}}selected{{/if}}>Sedan</option>
+        <option value="SUV"       {{#if (eq car.body_type "SUV")}}selected{{/if}}>SUV</option>
+        <option value="Wagon"     {{#if (eq car.body_type "Wagon")}}selected{{/if}}>Wagon</option>
+        <option value="Hatchback" {{#if (eq car.body_type "Hatchback")}}selected{{/if}}>Hatchback</option>
+        <option value="Coupe"     {{#if (eq car.body_type "Coupe")}}selected{{/if}}>Coupe</option>
+      </select>
+    </label>
+
+    {{!-- ======= Description (optional) ======= --}}
+    <label>Description (optional)
+      <textarea
+        name="description"
+        rows="4"
+        placeholder="Short description...">{{car.description}}</textarea>
+    </label>
+
+    {{!-- Actions (submit or cancel back to detail page) --}}
+    <div class="actions" style="display:flex; gap:.5rem; flex-wrap:wrap;">
+      <button type="submit" class="btn">Save changes</button>
+      <a href="/cars/{{car.id}}" class="btn" style="background:#1f2a44;color:#dbeafe;">Cancel</a>
+    </div>
+  </form>
+
+  {{!-- Back to list --}}
+  <p style="margin-top:.6rem;">
+    <a href="/cars">← Back to list</a>
+  </p>
+</section>
+
+{{!-- Local view styles (tiny spacing tweaks; can move to styles.css later) --}}
+<style>
+  .form label { margin-bottom:.15rem; }
+  .form input, .form select, .form textarea { margin-top:.25rem; }
+</style>
