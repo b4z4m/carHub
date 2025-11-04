@@ -1,6 +1,6 @@
 # CarHub
 
-A simple car listing web app (course project).
+A simple car listing web app for the course Web Development Fundamentals.
 
 ## Stack
 - Node.js, Express
